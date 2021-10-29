@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JPDB-FORM</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="http://login2explore.com/jpdb/resources/js/0.0.3/jpdb-commons.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Students Details <Form></Form>
+        </h2>
+        <form id="studForm" method="post">
+            <div class="form-group">
+                <span><label for="studId">Student ID:</label> <label id="studIdMsg">
+                    </label></span>
+                <input type="text" class="form-control" name="studId" id="studId" placeholder="Enter Student ID"
+                    required>
+            </div>
+            <div class="form-group">
+                <label for="studName">Student Name:</label>
+                <input type="text" class="form-control" id="studName" placeholder="Enter Student Name" name="studName">
+            </div>
+            <div class="form-group">
+                <label for="studEmail">Email:</label>
+                <input type="email" class="form-control" id="studEmail" placeholder="Enter Student Email"
+                    name="studEmail">
+            </div>
+            <div class="form-group">
+                <label for="studCity">City:</label>
+                <input type="text" class="form-control" id="studCity" placeholder="Enter Student City" name="studCity">
+            </div>
+            <input type="button" class="btn btn-primary" id="studSave" value="Save" onclick="saveStudent();">
+        </form>
+    </div>
+
+
+    <!----------------- Javascript -------------------->
+    <script>
+
+        // data validation and data getting function
+        function validateAndGetFormData() {
+            var studIdVar = $("#studId").val();
+            if (studIdVar === "") {
+                alert("Student ID Required Value");
+                $("#studId").focus();
+                return "";
+            }
+            var studNameVar = $("#studName").val();
+            if (studNameVar === "") {
+                alert("Student Name is Required Value");
+                $("#studName").focus();
+                return "";
+            }
+            var studEmailVar = $("#studEmail").val();
+            if (studEmailVar === "") {
+                alert("Student Email is Required Value");
+                $("#studEmail").focus();
+                return "";
+            }
+            var studCityVar = $("#studCity").val();
+            if (studCityVar === "") {
+                alert("Student City is Required Value");
+                $("#studCity").focus();
+                return "";
+            }
+            var jsonStrObj = {
+                studId: studIdVar,
+                studName: studNameVar,
+                studEmail: studEmailVar,
+                studCity: studCityVar,
+            };
+            return JSON.stringify(jsonStrObj);
+        }
+        // Form reset function
+        function resetForm() {
+            $("#studId").val("")
+            $("#studName").val("");
+            $("#studEmail").val("");
+            $("#studCity").val("");
+            $("#studId").focus();
+        }
+
+        // saving swtudent data and send to database function
+        function saveStudent() {
+            var jsonStr = validateAndGetFormData();
+            if (jsonStr === "") {
+                return;
+            }
+
+            // createPUTRequest function is used from JPDB Javascript library(JPDB Common JS) which link in included in Head Section 
+            var putReqStr = createPUTRequest("90936080|-31948820595601088|90944479",
+                jsonStr, "StudentsDetails", "STUD-REL");
+            alert(putReqStr);
+            jQuery.ajaxSetup({ async: false });
+
+            //  executeCommandAtGivenBaseUrl function is used from JPDB javascript library(JPDB Common JS)
+            var resultObj = executeCommandAtGivenBaseUrl(putReqStr,
+                "http://api.login2explore.com:5577", "/api/iml");
+            alert(JSON.stringify(resultObj));
+            jQuery.ajaxSetup({ async: true });
+            resetForm();
+        }
+
+
+    </script>
+
+</body>
+
+</html>
